@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>総合運命鑑定</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600;900&family=Shippori+Mincho:wght@400;700;800&family=Cinzel+Decorative:wght@400;700&display=swap');
+
+:root {
+  --bg:#07080f; --gold:#c8a84b; --gold2:#e8d5a0; --gold3:#7a5f1a;
+  --red:#9b2335; --red2:#d4415a; --ink:#f0ede6; --muted:#5e5a50;
+  --card:rgba(255,255,255,0.03); --border:rgba(200,168,75,0.18);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'Shippori Mincho','Noto Serif JP',serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 15% 20%,rgba(155,35,53,.12) 0%,transparent 60%),radial-gradient(ellipse 50% 60% at 85% 70%,rgba(200,168,75,.1) 0%,transparent 60%);pointer-events:none;z-index:0;}
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.s{position:absolute;background:#fff;border-radius:50%;animation:tw var(--d,3s) var(--del,0s) ease-in-out infinite;}
+@keyframes tw{0%,100%{opacity:var(--lo,.1);}50%{opacity:1;}}
+.wrap{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 1.2rem 5rem;}
+
+header{text-align:center;padding:3.5rem 0 2.5rem;}
+.h-en{font-family:'Cinzel Decorative',serif;font-size:.6rem;letter-spacing:.5em;color:var(--gold);opacity:.7;margin-bottom:.8rem;}
+h1{font-size:2.4rem;font-weight:800;letter-spacing:.18em;line-height:1.3;background:linear-gradient(160deg,var(--gold2) 0%,var(--gold) 40%,var(--red2) 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.h-sub{font-size:.72rem;letter-spacing:.3em;color:var(--muted);margin-top:.6rem;}
+
+.input-card{background:rgba(15,14,28,.7);border:1px solid var(--border);border-radius:3px;padding:2rem 1.5rem;backdrop-filter:blur(8px);position:relative;overflow:hidden;}
+.input-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--red2),var(--gold),transparent);opacity:.5;}
+.sl{font-size:.65rem;letter-spacing:.4em;color:var(--gold);margin-bottom:1.2rem;display:flex;align-items:center;gap:.6rem;}
+.sl::after{content:'';flex:1;height:1px;background:linear-gradient(to right,rgba(200,168,75,.3),transparent);}
+.fl{font-size:.68rem;letter-spacing:.25em;color:var(--gold);opacity:.8;display:block;margin-bottom:.4rem;}
+.row3{display:flex;gap:.7rem;margin-bottom:1.4rem;align-items:flex-end;}
+.fg{display:flex;flex-direction:column;}
+.fg.y{flex:2.2}.fg.m{flex:1}.fg.d{flex:1}
+.name-row{display:flex;gap:.7rem;margin-bottom:1rem;}
+.name-row .fg{flex:1;}
+input[type=number],input[type=text]{background:rgba(255,255,255,.05);border:1px solid rgba(200,168,75,.22);border-radius:2px;color:var(--ink);font-family:'Shippori Mincho',serif;font-size:1.05rem;padding:.65rem .85rem;width:100%;outline:none;transition:border-color .25s,background .25s;-moz-appearance:textfield;}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
+input:focus{border-color:var(--gold);background:rgba(200,168,75,.07);}
+input::placeholder{color:rgba(240,237,230,.18);font-size:.9rem;}
+.note{font-size:.62rem;color:var(--muted);letter-spacing:.1em;margin-bottom:1.2rem;line-height:1.7;}
+.btn-main{width:100%;background:linear-gradient(135deg,var(--gold3),var(--gold),#a07020,var(--gold3));background-size:200% 100%;border:none;border-radius:2px;color:#0a0800;cursor:pointer;font-family:'Shippori Mincho',serif;font-size:1rem;font-weight:700;letter-spacing:.5em;padding:1rem;transition:background-position .4s,transform .15s;}
+.btn-main:hover{background-position:100% 0;}
+.btn-main:active{transform:scale(.99);}
+
+.div-line{display:flex;align-items:center;gap:.8rem;margin:2.5rem 0 1.8rem;color:var(--gold);font-size:.6rem;letter-spacing:.4em;}
+.div-line::before,.div-line::after{content:'';flex:1;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);opacity:.5;}
+
+#result{display:none;}
+#result.show{display:block;animation:riseIn .9s ease forwards;}
+@keyframes riseIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* 2カラムヘッダー */
+.dual-header{display:grid;grid-template-columns:1fr 1px 1fr;margin-bottom:1.5rem;}
+.dh-col{text-align:center;padding:1.5rem 1rem;background:var(--card);border:1px solid var(--border);}
+.dh-col:first-child{border-radius:3px 0 0 3px;border-right:none;}
+.dh-col:last-child{border-radius:0 3px 3px 0;}
+.dh-sep{background:linear-gradient(to bottom,transparent,var(--gold),transparent);opacity:.4;}
+.dh-en{font-family:'Cinzel Decorative',serif;font-size:.55rem;letter-spacing:.3em;color:var(--muted);margin-bottom:.4rem;}
+.dh-symbol{font-size:2.8rem;line-height:1.1;filter:drop-shadow(0 0 10px rgba(200,168,75,.5));}
+.dh-name{font-size:1.3rem;font-weight:800;letter-spacing:.15em;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:.3rem 0 .1rem;}
+.dh-sub{font-size:.65rem;color:var(--muted);letter-spacing:.2em;}
+
+/* 総合スコア */
+.score-banner{background:linear-gradient(135deg,rgba(155,35,53,.15),rgba(200,168,75,.12));border:1px solid rgba(200,168,75,.25);border-radius:3px;padding:1.3rem 1.5rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:1.2rem;}
+.score-ring{width:70px;height:70px;flex-shrink:0;border-radius:50%;border:2px solid var(--gold);display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(200,168,75,.08);box-shadow:0 0 15px rgba(200,168,75,.2);}
+.score-num{font-size:1.5rem;font-weight:800;color:var(--gold2);line-height:1;}
+.score-unit{font-size:.55rem;color:var(--muted);letter-spacing:.1em;}
+.score-text h3{font-size:.68rem;letter-spacing:.3em;color:var(--gold);margin-bottom:.4rem;}
+.score-text p{font-size:.85rem;line-height:1.8;color:rgba(240,237,230,.85);}
+
+/* タブ */
+.tabs{display:flex;gap:0;margin-bottom:1.2rem;border:1px solid var(--border);border-radius:3px;overflow:hidden;}
+.tab-btn{flex:1;background:none;border:none;color:var(--muted);font-family:'Shippori Mincho',serif;font-size:.75rem;letter-spacing:.2em;padding:.7rem;cursor:pointer;transition:all .2s;border-right:1px solid var(--border);}
+.tab-btn:last-child{border-right:none;}
+.tab-btn.active{background:rgba(200,168,75,.12);color:var(--gold2);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* カード */
+.rcard{background:var(--card);border:1px solid var(--border);border-radius:3px;padding:1.4rem 1.3rem;margin-bottom:.9rem;position:relative;}
+.rcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--gold),var(--red2));}
+.rcard h3{font-size:.65rem;letter-spacing:.35em;color:var(--gold);margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem;}
+.rcard h3::after{content:'';flex:1;height:1px;background:rgba(200,168,75,.18);}
+.rcard p{font-size:.88rem;line-height:1.95;color:rgba(240,237,230,.88);}
+
+/* 年運バッジ */
+.cycle-badge{display:inline-block;padding:.3rem 1rem;border-radius:2px;font-size:1.1rem;font-weight:800;letter-spacing:.2em;margin-bottom:.6rem;}
+.cycle-badge.good{background:rgba(200,168,75,.15);border:1px solid rgba(200,168,75,.4);color:var(--gold2);}
+.cycle-badge.bad{background:rgba(155,35,53,.2);border:1px solid rgba(212,65,90,.4);color:#e8a0aa;}
+.cycle-badge.normal{background:rgba(255,255,255,.05);border:1px solid rgba(200,168,75,.2);color:var(--ink);}
+
+/* 周期ドット */
+.cycle-row{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.7rem;}
+.cd{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.58rem;border:1px solid rgba(200,168,75,.25);color:var(--ink);opacity:.55;cursor:default;}
+.cd.on{background:linear-gradient(135deg,var(--gold),#a07020);color:#0a0800;opacity:1;font-weight:700;box-shadow:0 0 10px rgba(200,168,75,.4);}
+.cd.daisak{background:rgba(155,35,53,.4);border-color:rgba(212,65,90,.5);color:#f0a0a8;opacity:.9;}
+
+/* 字画 */
+.stroke-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:.8rem;}
+.sg-item{background:rgba(255,255,255,.03);border:1px solid rgba(200,168,75,.12);border-radius:2px;padding:.7rem .5rem;text-align:center;}
+.sg-item .sg-label{font-size:.58rem;letter-spacing:.15em;color:var(--muted);display:block;margin-bottom:.2rem;}
+.sg-item .sg-num{font-size:1.4rem;font-weight:800;color:var(--gold2);line-height:1;}
+.sg-item .sg-kaku{font-size:.65rem;}
+.sg-item.sg-total{border-color:rgba(200,168,75,.35);background:rgba(200,168,75,.06);grid-column:span 2;}
+.sg-item.sg-total .sg-num{color:var(--gold);font-size:1.7rem;}
+.good-kaku{color:#a0e0a0;}.bad-kaku{color:#e0a0a0;}
+
+/* キーワード */
+.kw-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem;}
+.kw{background:rgba(200,168,75,.1);border:1px solid rgba(200,168,75,.22);border-radius:2px;color:var(--gold2);font-size:.75rem;letter-spacing:.08em;padding:.2rem .65rem;}
+
+/* ラッキー */
+.lucky-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;margin-top:.5rem;}
+.li{background:rgba(255,255,255,.03);border:1px solid rgba(200,168,75,.1);border-radius:2px;padding:.65rem;text-align:center;}
+.li .ll{font-size:.6rem;letter-spacing:.2em;color:var(--muted);display:block;margin-bottom:.25rem;}
+.li .lv{font-size:.92rem;color:var(--gold2);}
+
+/* 相性バー */
+.compat-bar{height:6px;border-radius:3px;background:rgba(200,168,75,.1);margin:.6rem 0 .3rem;overflow:hidden;}
+.compat-fill{height:100%;border-radius:3px;background:linear-gradient(to right,var(--red2),var(--gold));transition:width 1s ease;}
+.compat-label{font-size:.65rem;color:var(--muted);letter-spacing:.15em;}
+
+footer{text-align:center;margin-top:3rem;font-size:.6rem;letter-spacing:.15em;color:rgba(90,82,72,.5);line-height:2;}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<div class="wrap">
+
+<header>
+  <div class="h-en">✦ Integrated Destiny Reading ✦</div>
+  <h1>総合運命鑑定</h1>
+  <div class="h-sub">六星占術 × 姓名判断　融合鑑定（修正版）</div>
+</header>
+
+<div class="input-card">
+  <div class="sl">▷ 生年月日</div>
+  <div class="row3">
+    <div class="fg y"><label class="fl">年</label><input type="number" id="year" placeholder="1990" min="1900" max="2025"></div>
+    <div class="fg m"><label class="fl">月</label><input type="number" id="month" placeholder="8" min="1" max="12"></div>
+    <div class="fg d"><label class="fl">日</label><input type="number" id="day" placeholder="15" min="1" max="31"></div>
+  </div>
+  <div class="sl">▷ 氏名（漢字）</div>
+  <div class="name-row">
+    <div class="fg"><label class="fl">姓</label><input type="text" id="sei" placeholder="例：田中"></div>
+    <div class="fg"><label class="fl">名</label><input type="text" id="mei" placeholder="例：貴也"></div>
+  </div>
+  <p class="note">※ 姓名判断は熊崎式（旧字体画数基準）を使用。常用漢字と画数が異なる場合があります。</p>
+  <button class="btn-main" onclick="doFortune()">鑑　定　開　始</button>
+</div>
+
+<div id="result">
+  <div class="div-line">✦ 鑑定結果 ✦</div>
+
+  <div class="dual-header">
+    <div class="dh-col">
+      <div class="dh-en">Rokusei</div>
+      <div class="dh-symbol" id="r-symbol">★</div>
+      <div class="dh-name" id="r-name">—</div>
+      <div class="dh-sub" id="r-sub">—</div>
+    </div>
+    <div class="dh-sep"></div>
+    <div class="dh-col">
+      <div class="dh-en">Seimei</div>
+      <div class="dh-symbol">✦</div>
+      <div class="dh-name" id="s-name">—</div>
+      <div class="dh-sub" id="s-sub">—</div>
+    </div>
+  </div>
+
+  <div class="score-banner">
+    <div class="score-ring">
+      <div class="score-num" id="total-score">—</div>
+      <div class="score-unit">総合運</div>
+    </div>
+    <div class="score-text">
+      <h3>総合鑑定メッセージ</h3>
+      <p id="total-msg">—</p>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(0)">六星占術</button>
+    <button class="tab-btn" onclick="switchTab(1)">姓名判断</button>
+    <button class="tab-btn" onclick="switchTab(2)">今年の運勢</button>
+    <button class="tab-btn" onclick="switchTab(3)">ラッキー</button>
+  </div>
+
+  <!-- TAB0 -->
+  <div class="tab-content active" id="tab0">
+    <div class="rcard">
+      <h3>星の性質</h3>
+      <p id="r-nature">—</p>
+      <div class="kw-row" id="r-kw"></div>
+    </div>
+    <div class="rcard">
+      <h3>12年周期　現在の運気</h3>
+      <div class="cycle-row" id="cycle-row"></div>
+      <p id="cycle-text">—</p>
+    </div>
+  </div>
+
+  <!-- TAB1 -->
+  <div class="tab-content" id="tab1">
+    <div class="rcard">
+      <h3>字画内訳</h3>
+      <div class="stroke-grid" id="stroke-grid"></div>
+      <p id="s-nature">—</p>
+      <div class="kw-row" id="s-kw"></div>
+    </div>
+    <div class="rcard">
+      <h3>各格の意味</h3>
+      <p id="kakku-text">—</p>
+    </div>
+  </div>
+
+  <!-- TAB2 -->
+  <div class="tab-content" id="tab2">
+    <div class="rcard">
+      <h3>2026年の年運</h3>
+      <div id="cycle-badge-wrap" style="margin-bottom:.6rem"></div>
+      <p id="yearly-text">—</p>
+    </div>
+    <div class="rcard">
+      <h3>六星×姓名　相性スコア</h3>
+      <div class="compat-bar"><div class="compat-fill" id="compat-fill" style="width:0%"></div></div>
+      <p class="compat-label" id="compat-label">—</p>
+      <p id="compat-text" style="font-size:.88rem;line-height:1.9;color:rgba(240,237,230,.85);margin-top:.7rem">—</p>
+    </div>
+    <div class="rcard">
+      <h3>今月のひとこと</h3>
+      <p id="monthly-msg">—</p>
+    </div>
+  </div>
+
+  <!-- TAB3 -->
+  <div class="tab-content" id="tab3">
+    <div class="rcard">
+      <h3>六星のラッキー</h3>
+      <div class="lucky-grid" id="lucky-grid"></div>
+    </div>
+    <div class="rcard">
+      <h3>姓名から導くラッキー数字</h3>
+      <p id="name-lucky-text">—</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  ※ 六星占術（細木数子式・正規計算）＋姓名判断（熊崎式）を参考にしたエンターテインメントです<br>
+  ── ✦ みかん屋の息子 Special Edition ✦ ──
+</footer>
+</div>
+
+<script>
+// 星空
+(()=>{
+  const c=document.getElementById('stars');
+  for(let i=0;i<150;i++){
+    const s=document.createElement('div');s.className='s';
+    const sz=Math.random()*1.8+.4;
+    s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;--lo:${Math.random()*.25+.05};--d:${Math.random()*5+2}s;animation-delay:${Math.random()*5}s`;
+    c.appendChild(s);
+  }
+})();
+
+function switchTab(n){
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===n));
+  document.querySelectorAll('.tab-content').forEach((t,i)=>t.classList.toggle('active',i===n));
+}
+
+// ────────────────────────────────────────
+// 六星占術　運命数表（正規）
+// ────────────────────────────────────────
+// 運命数表: 年×月 → 運命数
+// 計算式: 星数 = 運命数 - 1 + 日  (61以上なら-60)
+// 星数1-10:土星人 11-20:金星人 21-30:火星人 31-40:天王星人 41-50:木星人 51-60:水星人
+const MEISU = {
+  1900:{1:25,2:56,3:24,4:55,5:25,6:56,7:26,8:57,9:29,10:59,11:30,12:60},
+  1901:{1:31,2:2,3:30,4:1,5:31,6:2,7:32,8:3,9:34,10:4,11:35,12:5},
+  1902:{1:36,2:7,3:35,4:6,5:36,6:7,7:37,8:8,9:39,10:9,11:40,12:10},
+  1903:{1:41,2:12,3:40,4:11,5:41,6:12,7:42,8:13,9:44,10:14,11:45,12:15},
+  1904:{1:46,2:17,3:46,4:17,5:47,6:18,7:48,8:19,9:50,10:20,11:51,12:21},
+  1905:{1:52,2:23,3:51,4:22,5:52,6:23,7:53,8:24,9:55,10:25,11:56,12:26},
+  1906:{1:57,2:28,3:56,4:27,5:57,6:28,7:58,8:29,9:60,10:30,11:1,12:31},
+  1907:{1:2,2:33,3:1,4:32,5:2,6:33,7:3,8:34,9:5,10:35,11:6,12:36},
+  1908:{1:7,2:38,3:7,4:38,5:8,6:39,7:9,8:40,9:11,10:41,11:12,12:42},
+  1909:{1:13,2:44,3:12,4:43,5:13,6:44,7:14,8:45,9:16,10:46,11:17,12:47},
+  1910:{1:18,2:49,3:17,4:48,5:18,6:49,7:19,8:50,9:21,10:51,11:22,12:52},
+  1911:{1:23,2:54,3:22,4:53,5:23,6:54,7:24,8:55,9:26,10:56,11:27,12:57},
+  1912:{1:13,2:44,3:13,4:44,5:14,6:45,7:15,8:46,9:17,10:47,11:18,12:48},
+  1913:{1:19,2:50,3:18,4:49,5:19,6:50,7:20,8:51,9:22,10:52,11:23,12:53},
+  1914:{1:24,2:55,3:23,4:54,5:24,6:55,7:25,8:56,9:27,10:57,11:28,12:58},
+  1915:{1:29,2:60,3:28,4:59,5:29,6:60,7:30,8:61,9:32,10:2,11:33,12:3},
+  1916:{1:34,2:5,3:34,4:5,5:35,6:6,7:36,8:7,9:38,10:8,11:39,12:9},
+  1917:{1:40,2:11,3:39,4:10,5:40,6:11,7:41,8:12,9:43,10:13,11:44,12:14},
+  1918:{1:45,2:16,3:44,4:15,5:45,6:16,7:46,8:17,9:48,10:18,11:49,12:19},
+  1919:{1:50,2:21,3:49,4:20,5:50,6:21,7:51,8:22,9:53,10:23,11:54,12:24},
+  1920:{1:55,2:26,3:55,4:26,5:56,6:27,7:57,8:28,9:59,10:29,11:60,12:30},
+  1921:{1:61,2:32,3:60,4:31,5:61,6:32,7:2,8:33,9:4,10:34,11:5,12:35},
+  1922:{1:6,2:37,3:5,4:36,5:6,6:37,7:7,8:38,9:9,10:39,11:10,12:40},
+  1923:{1:11,2:42,3:10,4:41,5:11,6:42,7:12,8:43,9:14,10:44,11:15,12:45},
+  1924:{1:16,2:47,3:16,4:47,5:17,6:48,7:18,8:49,9:20,10:50,11:21,12:51},
+  1925:{1:22,2:53,3:21,4:52,5:22,6:53,7:23,8:54,9:25,10:55,11:26,12:56},
+  1926:{1:27,2:58,3:26,4:57,5:27,6:58,7:28,8:59,9:30,10:60,11:31,12:61},
+  1927:{1:32,2:3,3:31,4:2,5:32,6:3,7:33,8:4,9:35,10:5,11:36,12:6},
+  1928:{1:37,2:8,3:37,4:8,5:38,6:9,7:39,8:10,9:41,10:11,11:42,12:12},
+  1929:{1:43,2:14,3:42,4:13,5:43,6:14,7:44,8:15,9:46,10:16,11:47,12:17},
+  1930:{1:48,2:19,3:47,4:18,5:48,6:19,7:49,8:20,9:51,10:21,11:52,12:22},
+  1931:{1:53,2:24,3:52,4:23,5:53,6:24,7:54,8:25,9:56,10:26,11:57,12:27},
+  1932:{1:58,2:29,3:58,4:29,5:59,6:30,7:60,8:31,9:2,10:32,11:3,12:33},
+  1933:{1:4,2:35,3:3,4:34,5:4,6:35,7:5,8:36,9:7,10:37,11:8,12:38},
+  1934:{1:9,2:40,3:8,4:39,5:9,6:40,7:10,8:41,9:12,10:42,11:13,12:43},
+  1935:{1:14,2:45,3:13,4:44,5:14,6:45,7:15,8:46,9:17,10:47,11:18,12:48},
+  1936:{1:19,2:50,3:19,4:50,5:20,6:51,7:21,8:52,9:23,10:53,11:24,12:54},
+  1937:{1:25,2:56,3:24,4:55,5:25,6:56,7:26,8:57,9:28,10:58,11:29,12:59},
+  1938:{1:30,2:61,3:29,4:60,5:30,6:61,7:31,8:2,9:33,10:3,11:34,12:4},
+  1939:{1:35,2:6,3:34,4:5,5:35,6:6,7:36,8:7,9:38,10:8,11:39,12:9},
+  1940:{1:39,2:10,3:39,4:10,5:40,6:11,7:41,8:12,9:43,10:13,11:44,12:14},
+  1941:{1:45,2:16,3:44,4:15,5:45,6:16,7:46,8:17,9:48,10:18,11:49,12:19},
+  1942:{1:50,2:21,3:49,4:20,5:50,6:21,7:51,8:22,9:53,10:23,11:54,12:24},
+  1943:{1:55,2:26,3:54,4:25,5:55,6:26,7:56,8:27,9:58,10:28,11:59,12:29},
+  1944:{1:60,2:31,3:60,4:31,5:1,6:32,7:2,8:33,9:4,10:34,11:5,12:35},
+  1945:{1:6,2:37,3:5,4:36,5:6,6:37,7:7,8:38,9:9,10:39,11:10,12:40},
+  1946:{1:11,2:42,3:10,4:41,5:11,6:42,7:12,8:43,9:14,10:44,11:15,12:45},
+  1947:{1:16,2:47,3:15,4:46,5:16,6:47,7:17,8:48,9:19,10:49,11:20,12:50},
+  1948:{1:21,2:52,3:21,4:52,5:22,6:53,7:23,8:54,9:25,10:55,11:26,12:56},
+  1949:{1:27,2:58,3:26,4:57,5:27,6:58,7:28,8:59,9:30,10:60,11:31,12:1},
+  1950:{1:33,2:4,3:32,4:3,5:33,6:4,7:34,8:5,9:36,10:6,11:37,12:7},
+  1951:{1:38,2:9,3:37,4:8,5:38,6:9,7:39,8:10,9:41,10:11,11:42,12:12},
+  1952:{1:43,2:14,3:43,4:14,5:44,6:15,7:45,8:16,9:47,10:17,11:48,12:18},
+  1953:{1:49,2:20,3:48,4:19,5:49,6:20,7:50,8:21,9:52,10:22,11:53,12:23},
+  1954:{1:54,2:25,3:53,4:24,5:54,6:25,7:55,8:26,9:57,10:27,11:58,12:28},
+  1955:{1:59,2:30,3:58,4:29,5:59,6:30,7:60,8:31,9:2,10:32,11:3,12:33},
+  1956:{1:4,2:35,3:4,4:35,5:5,6:36,7:6,8:37,9:8,10:38,11:9,12:39},
+  1957:{1:10,2:41,3:9,4:40,5:10,6:41,7:11,8:42,9:13,10:43,11:14,12:44},
+  1958:{1:15,2:46,3:14,4:45,5:15,6:46,7:16,8:47,9:18,10:48,11:19,12:49},
+  1959:{1:20,2:51,3:19,4:50,5:20,6:51,7:21,8:52,9:23,10:53,11:24,12:54},
+  1960:{1:25,2:56,3:25,4:56,5:26,6:57,7:27,8:58,9:29,10:59,11:30,12:60},
+  1961:{1:31,2:2,3:30,4:1,5:31,6:2,7:32,8:3,9:34,10:4,11:35,12:5},
+  1962:{1:36,2:7,3:35,4:6,5:36,6:7,7:37,8:8,9:39,10:9,11:40,12:10},
+  1963:{1:41,2:12,3:40,4:11,5:41,6:12,7:42,8:13,9:44,10:14,11:45,12:15},
+  1964:{1:46,2:17,3:46,4:17,5:47,6:18,7:48,8:19,9:50,10:20,11:51,12:21},
+  1965:{1:52,2:23,3:51,4:22,5:52,6:23,7:53,8:24,9:55,10:25,11:56,12:26},
+  1966:{1:57,2:28,3:56,4:27,5:57,6:28,7:58,8:29,9:60,10:30,11:1,12:31},
+  1967:{1:2,2:33,3:1,4:32,5:2,6:33,7:3,8:34,9:5,10:35,11:6,12:36},
+  1968:{1:7,2:38,3:7,4:38,5:8,6:39,7:9,8:40,9:11,10:41,11:12,12:42},
+  1969:{1:13,2:44,3:12,4:43,5:13,6:44,7:14,8:45,9:16,10:46,11:17,12:47},
+  1970:{1:18,2:49,3:17,4:48,5:18,6:49,7:19,8:50,9:21,10:51,11:22,12:52},
+  1971:{1:23,2:54,3:22,4:53,5:23,6:54,7:24,8:55,9:26,10:56,11:27,12:57},
+  1972:{1:28,2:59,3:28,4:59,5:29,6:60,7:30,8:1,9:32,10:2,11:33,12:3},
+  1973:{1:34,2:5,3:33,4:4,5:34,6:5,7:35,8:6,9:37,10:7,11:38,12:8},
+  1974:{1:39,2:10,3:38,4:9,5:39,6:10,7:40,8:11,9:42,10:12,11:43,12:13},
+  1975:{1:44,2:15,3:43,4:14,5:44,6:15,7:45,8:16,9:47,10:17,11:48,12:18},
+  1976:{1:49,2:20,3:49,4:20,5:50,6:21,7:51,8:22,9:53,10:23,11:54,12:24},
+  1977:{1:55,2:26,3:54,4:25,5:55,6:26,7:56,8:27,9:58,10:28,11:59,12:29},
+  1978:{1:60,2:31,3:59,4:30,5:60,6:31,7:1,8:32,9:3,10:33,11:4,12:34},
+  1979:{1:5,2:36,3:4,4:35,5:5,6:36,7:6,8:37,9:8,10:38,11:9,12:39},
+  1980:{1:10,2:41,3:10,4:41,5:11,6:42,7:12,8:43,9:14,10:44,11:15,12:45},
+  1981:{1:16,2:47,3:15,4:46,5:16,6:47,7:17,8:48,9:19,10:49,11:20,12:50},
+  1982:{1:21,2:52,3:20,4:51,5:21,6:52,7:22,8:53,9:24,10:54,11:25,12:55},
+  1983:{1:26,2:57,3:25,4:56,5:26,6:57,7:27,8:58,9:29,10:59,11:30,12:60},
+  1984:{1:31,2:2,3:31,4:2,5:32,6:3,7:33,8:4,9:35,10:5,11:36,12:6},
+  1985:{1:37,2:8,3:36,4:7,5:37,6:8,7:38,8:9,9:40,10:10,11:41,12:11},
+  1986:{1:42,2:13,3:41,4:12,5:42,6:13,7:43,8:14,9:45,10:15,11:46,12:16},
+  1987:{1:47,2:18,3:46,4:17,5:47,6:18,7:48,8:19,9:50,10:20,11:51,12:21},
+  1988:{1:52,2:23,3:52,4:23,5:53,6:24,7:54,8:25,9:56,10:26,11:57,12:27},
+  1989:{1:58,2:29,3:57,4:28,5:58,6:29,7:59,8:30,9:1,10:31,11:2,12:32},
+  1990:{1:3,2:34,3:2,4:33,5:3,6:34,7:4,8:35,9:6,10:36,11:7,12:37},
+  1991:{1:8,2:39,3:7,4:38,5:8,6:39,7:9,8:40,9:11,10:41,11:12,12:42},
+  1992:{1:13,2:44,3:13,4:44,5:14,6:45,7:15,8:46,9:17,10:47,11:18,12:48},
+  1993:{1:19,2:50,3:18,4:49,5:19,6:50,7:20,8:51,9:22,10:52,11:23,12:53},
+  1994:{1:24,2:55,3:23,4:54,5:24,6:55,7:25,8:56,9:27,10:57,11:28,12:58},
+  1995:{1:29,2:60,3:28,4:59,5:29,6:60,7:30,8:1,9:2,10:32,11:3,12:33},
+  1996:{1:34,2:5,3:34,4:5,5:35,6:6,7:36,8:7,9:38,10:8,11:39,12:9},
+  1997:{1:40,2:11,3:39,4:10,5:40,6:11,7:41,8:12,9:43,10:13,11:44,12:14},
+  1998:{1:45,2:16,3:44,4:15,5:45,6:16,7:46,8:17,9:48,10:18,11:49,12:19},
+  1999:{1:50,2:21,3:49,4:20,5:50,6:21,7:51,8:22,9:53,10:23,11:54,12:24},
+  2000:{1:55,2:26,3:55,4:26,5:56,6:27,7:57,8:28,9:59,10:29,11:60,12:30},
+  2001:{1:1,2:32,3:60,4:31,5:1,6:32,7:2,8:33,9:34,10:34,11:5,12:35},
+  2002:{1:6,2:37,3:5,4:36,5:6,6:37,7:7,8:38,9:9,10:39,11:10,12:40},
+  2003:{1:11,2:42,3:10,4:41,5:11,6:42,7:12,8:43,9:14,10:44,11:15,12:45},
+  2004:{1:16,2:47,3:16,4:47,5:17,6:48,7:18,8:49,9:20,10:50,11:21,12:51},
+  2005:{1:22,2:53,3:21,4:52,5:22,6:53,7:23,8:54,9:25,10:55,11:26,12:56},
+  2006:{1:27,2:58,3:26,4:57,5:27,6:58,7:28,8:59,9:30,10:60,11:31,12:1},
+  2007:{1:32,2:3,3:31,4:2,5:32,6:3,7:33,8:4,9:35,10:5,11:36,12:6},
+  2008:{1:37,2:8,3:37,4:8,5:38,6:9,7:39,8:10,9:41,10:11,11:42,12:12},
+  2009:{1:43,2:14,3:42,4:13,5:43,6:14,7:44,8:15,9:46,10:16,11:47,12:17},
+  2010:{1:48,2:19,3:47,4:18,5:48,6:19,7:49,8:20,9:51,10:21,11:52,12:22},
+};
+
+// 干支判定（プラス・マイナス）
+// 陽(+)：丑卯巳未酉亥  陰(-)：子寅辰午申戌
+function getPlusMinus(year) {
+  const junishi = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+  const eto = junishi[((year - 4) % 12 + 12) % 12];
+  const plus = ['子','寅','辰','午','申','戌'];
+  return plus.includes(eto) ? '+' : '-';
+}
+
+// 星数 → 運命星
+function getStarFromSeisu(seisu) {
+  if (seisu >= 1 && seisu <= 10) return '土星人';
+  if (seisu >= 11 && seisu <= 20) return '金星人';
+  if (seisu >= 21 && seisu <= 30) return '火星人';
+  if (seisu >= 31 && seisu <= 40) return '天王星人';
+  if (seisu >= 41 && seisu <= 50) return '木星人';
+  if (seisu >= 51 && seisu <= 60) return '水星人';
+  return '—';
+}
+
+// ────────────────────────────────────────
+// 12年周期　各星人×陰陽の種子基準年
+// 2026年の年運から逆算した正確な値
+// ────────────────────────────────────────
+const TANE_YEAR = {
+  '土星人+': 2022,  // 2026=達成(5番目)
+  '土星人-': 2020,  // 2026=再会(7番目)
+  '金星人+': 2018,  // 2026=安定(9番目)
+  '金星人-': 2024,  // 2026=立花(3番目)
+  '火星人+': 2015,  // 2026=減退(12番目)
+  '火星人-': 2017,  // 2026=陰影(10番目)
+  '天王星人+': 2024,// 2026=立花(3番目)
+  '天王星人-': 2016,// 2026=停止(11番目)
+  '木星人+': 2024,  // 2026=立花(3番目)
+  '木星人-': 2025,  // 2026=緑生(2番目)
+  '水星人+': 2019,  // 2026=財成(8番目)
+  '水星人-': 2023,  // 2026=健弱(4番目)
+};
+
+const CYCLES = ['種子','緑生','立花','健弱','達成','乱気','再会','財成','安定','陰影','停止','減退'];
+const DAISAK = ['陰影','停止','減退'];
+const SHOSAK = ['健弱','達成'];
+
+function getCycle(starKey, targetYear) {
+  const tane = TANE_YEAR[starKey];
+  const idx = ((targetYear - tane) % 12 + 12) % 12;
+  return CYCLES[idx];
+}
+
+// ────────────────────────────────────────
+// 六星占術　星人データ
+// ────────────────────────────────────────
+const STARS = {
+  '土星人': {
+    symbol:'🜃', nature:'努力家で忍耐強く、着実に物事を進める力があります。地に足のついた現実主義者で、一度決めたことは最後までやり遂げる粘り強さを持ちます。誠実な人間関係を大切にします。',
+    kw:['誠実','忍耐','堅実','信頼','努力'],
+    lucky:{color:'白・グレー',num:'4',dir:'北',item:'石・鉱物'}
+  },
+  '金星人': {
+    symbol:'♀', nature:'美的センスと洗練された感覚を持つ芸術家タイプ。社交的で人脈が広がりやすく、物事を美しく整えることが得意です。快適な環境を好む審美眼の持ち主です。',
+    kw:['美意識','社交的','魅力','感性','洗練'],
+    lucky:{color:'金・ベージュ',num:'8',dir:'南西',item:'花・装飾品'}
+  },
+  '火星人': {
+    symbol:'♂', nature:'行動力と情熱にあふれたエネルギーの持ち主。チャレンジ精神旺盛でリーダーシップがあり、困難な状況でもひるまない強さを持ちます。',
+    kw:['行動力','情熱','挑戦','リーダー','勇敢'],
+    lucky:{color:'赤・オレンジ',num:'3',dir:'南',item:'金属・炎'}
+  },
+  '天王星人': {
+    symbol:'⛢', nature:'独創性と自由な発想を持つ革新者。常識にとらわれない先見性があり、人とは違う視点から物事を捉えます。自由を愛し、個性的な生き方をします。',
+    kw:['独創性','自由','先見性','革新','個性'],
+    lucky:{color:'青・紫',num:'7',dir:'東北',item:'電子機器'}
+  },
+  '木星人': {
+    symbol:'♃', nature:'几帳面な大器晩成型。家庭と静寂を愛し、落ち着いた空間を好みます。誠実で思いやりがあり、じっくりと時間をかけて大きな成果を積み上げます。',
+    kw:['几帳面','誠実','大器晩成','家庭的','協調'],
+    lucky:{color:'緑・茶',num:'6',dir:'東',item:'植物・木材'}
+  },
+  '水星人': {
+    symbol:'☿', nature:'知性と機動力を持ち、コミュニケーション能力に優れています。情報収集と分析が得意で、適応力が高く多才。好奇心旺盛で幅広い分野で活躍できます。',
+    kw:['知性','適応力','多才','機動力','分析'],
+    lucky:{color:'水色・銀',num:'1',dir:'北西',item:'水・鏡'}
+  }
+};
+
+// 周期の意味
+const CYCLE_DATA = {
+  '種子': {msg:'12年周期のスタート。新しいことを始めるのに最適な時期。この年に始めたことは大きな実りを結びます。結婚・就職・引越しにも吉。'},
+  '緑生': {msg:'種が芽吹いて成長してくる時期。昨年始めたことがどんどん上達してきます。自信を持って積極的に動きましょう。'},
+  '立花': {msg:'才能が開花する好機。努力が形となって評価されます。積極的な行動が吉。人脈も広がりやすい年です。'},
+  '健弱': {msg:'小殺界。体調管理に注意が必要な時期。無理をせず基礎固めに専念しましょう。大きな行動は控えめに。'},
+  '達成': {msg:'小殺界。12年周期の区切り。これまでの努力の成果が出る時期ですが、慎重さも必要。次のステージへの準備を。'},
+  '乱気': {msg:'変化と揺らぎの時期。感情の起伏が激しくなりがち。冷静な判断を心がけ、重大な決断は避けましょう。'},
+  '再会': {msg:'過去の縁が復活する時期。旧友や昔の仕事仲間との再会が運を開きます。人との繋がりを大切に。'},
+  '財成': {msg:'金運・財運が高まる時期。努力が実を結び財産を築きやすい年。ただし浪費には注意。'},
+  '安定': {msg:'落ち着いた運気。堅実に積み上げることが未来への布石になります。守りを固めて内充実を図る年。'},
+  '陰影': {msg:'大殺界（1年目）。試練の始まり。新しいことは始めず現状維持に徹しましょう。'},
+  '停止': {msg:'大殺界（2年目）。運気の底。慎重に行動し、目立つことは避けて内側の充実に集中しましょう。'},
+  '減退': {msg:'大殺界（3年目）。大殺界の最終年。じっくり内省し、次の種子（新周期）への準備をする大切な時期。'},
+};
+
+const MONTHLY = ['積極的な行動が吉。新しい出会いを大切に。','内省の時間が良いアイデアを生みます。','人との繋がりから運気が開けます。','金運アップ。大事なことに集中を。','健康に気を配りながら成果が出やすい時期。','直感が冴えています。ひらめきを大切に。','家族や身近な人との絆を深める時間を。','チャレンジに最適。一歩踏み出す勇気が幸運を呼びます。','運気は安定。コツコツと積み上げることが未来への布石に。','旅や移動が新しい可能性をもたらします。','学びの月。スキルアップが将来の財産に。','感謝を表現することで良い縁が循環します。'];
+
+// ────────────────────────────────────────
+// 姓名判断
+// ────────────────────────────────────────
+const KANJI_STROKES = {
+  '一':1,'乙':1,'二':2,'人':2,'入':2,'八':2,'力':2,'刀':2,'十':2,'三':3,'山':3,'川':3,'土':3,'士':3,'大':3,'小':3,'女':3,'子':3,'上':3,'下':3,'工':3,'也':3,'之':3,'久':3,'口':3,'弓':3,'千':3,'才':3,'四':4,'中':4,'日':4,'月':4,'木':4,'火':4,'水':4,'金':4,'天':4,'夫':4,'太':4,'友':4,'心':4,'手':4,'文':4,'方':4,'元':4,'公':4,'内':4,'今':4,'介':4,'井':4,'仁':4,'六':4,'五':5,'田':5,'生':5,'白':5,'石':5,'目':5,'本':5,'正':5,'平':5,'代':5,'北':5,'古':5,'右':5,'左':5,'司':5,'史':5,'可':5,'礼':5,'永':5,'弘':5,'広':5,'六':4,'年':6,'名':6,'西':6,'百':6,'先':6,'好':6,'安':6,'成':6,'自':6,'有':6,'光':6,'竹':6,'米':6,'羊':6,'色':6,'行':6,'多':6,'各':6,'合':6,'同':6,'向':6,'地':6,'在':6,'寺':6,'当':6,'早':6,'江':6,'池':6,'交':6,'伊':6,'男':7,'町':7,'足':7,'見':7,'来':7,'花':7,'体':7,'別':7,'利':7,'君':7,'孝':7,'完':7,'志':7,'弟':7,'形':7,'役':7,'快':7,'折':7,'村':7,'里':7,'防':7,'社':7,'局':7,'岐':7,'克':7,'那':7,'和':8,'知':8,'空':8,'長':8,'門':8,'学':8,'岡':8,'明':8,'東':8,'林':8,'岩':8,'武':8,'波':8,'法':8,'直':8,'英':8,'幸':8,'佳':8,'典':8,'協':8,'取':8,'周':8,'宗':8,'昌':8,'枝':8,'松':8,'治':8,'牧':8,'画':8,'念':8,'妻':8,'官':8,'定':8,'宝':8,'岳':8,'青':8,'赤':7,'春':9,'重':9,'風':9,'急':9,'信':9,'保':9,'南':9,'洋':9,'柏':9,'柔':9,'柳':9,'泉':9,'津':9,'洗':9,'流':9,'活':9,'点':9,'美':9,'界':9,'思':9,'星':9,'映':9,'昭':9,'荒':9,'草':9,'茂':9,'音':9,'飛':9,'食':9,'首':9,'咲':9,'彦':9,'則':9,'勇':9,'哉':9,'城':9,'帝':9,'建':9,'政':9,'故':9,'亮':9,'栄':9,'高':10,'真':10,'原':10,'哲':10,'家':10,'夏':10,'珠':10,'倫':10,'兼':10,'修':10,'俊':10,'倉':10,'候':10,'健':10,'唐':10,'宮':10,'将':10,'島':10,'恵':10,'恒':10,'悦':10,'桂':10,'格':10,'桐':10,'根':10,'泰':10,'浦':10,'浩':10,'浪':10,'浮':10,'珊':10,'紘':10,'純':10,'能':10,'荷':10,'記':10,'財':10,'起':10,'晃':10,'竜':10,'勝':12,'貴':12,'博':12,'翔':12,'晴':12,'雄':12,'絵':12,'智':12,'結':12,'葵':12,'遥':12,'湖':12,'渓':11,'悠':11,'陸':11,'唯':11,'菅':11,'優':17,'麗':19,'蓮':13,'颯':14,'煌':13,'輝':15,'瑛':12,'樹':16,'誉':13,'誠':13,'義':13,'仁':4,'徳':14,'恩':10,'望':11,'夢':13,'希':7,'愛':13,'翼':17,'鳳':14,'龍':16,'瑠':14,'琴':12,'紗':10,'彩':11,'莉':10,'菜':11,'華':10,'楓':13,'萌':11,'澪':16,'凛':15,'拓':8,'瞬':18,'涼':11,'凌':10,'郎':9,'佐':7,'藤':18,'渡':12,'鈴':13,'斎':11,'吉':6,'坂':7,'阪':7,'阿':8,'秋':9,'浅':9,'新':13,'稲':14,'宇':6,'浦':10,'奥':13,'鹿':11,'亀':11,'河':8,'桑':10,'近':7,'熊':14,'倉':10,'黒':11,'香':9,'国':8,'斉':8,'塩':13,'芝':6,'清':11,'杉':7,'諏':16,'平':5,'谷':7,'遠':13,'豊':13,'富':12,'豺':10,'土':3,'長':8,'名':6,'西':6,'冬':5,'雨':8,'雪':11,'野':11,'橋':16,'梅':10,'林':8,'森':12,'坂':7,'賢':16,'剣':10,'刃':3,'剛':10,'烈':10,'猛':11,'静':14,'穏':16,'寛':13,'温':12,'翼':17,'峰':10,'嶋':17,'麒':19,'麟':23,'真':10,'旭':6,'曙':17,'朝':12,'蒼':13,'碧':14,'藍':17,'紺':11,'緑':14,'翠':14,'宏':7,'敦':12,'敬':12,'徹':15,'達':12,'恭':10,'紀':9,'敏':10,'功':5,'加':5,'弥':8,'里':7,'岬':8,'峡':8,'潟':15,'傑':12,'曇':16,'晶':12,'陽':12,'龍':16,'彰':14,'亘':6,
+};
+function getStrokes(c){return KANJI_STROKES[c]||(c.codePointAt(0)>=0x4e00&&c.codePointAt(0)<=0x9fff?((c.codePointAt(0)-0x4e00)%20)+1:1);}
+function calcKakku(sei,mei){
+  const ss=[...sei].map(getStrokes),ms=[...mei].map(getStrokes);
+  const st=ss.reduce((a,b)=>a+b,0),mt=ms.reduce((a,b)=>a+b,0);
+  const ten=st,jin=(ss[ss.length-1]||0)+(ms[0]||0),chi=mt;
+  const gai=(ss.length>1?ss[0]:ss[0]||1)+(ms.length>1?ms[ms.length-1]:ms[ms.length-1]||1);
+  return {ten,jin,chi,gai,so:st+mt};
+}
+function strokeLuck(n){const l=[1,3,5,6,7,8,11,13,15,16,17,18,21,23,24,25,29,31,32,33,35,37,38,39,41,45,47,48,52,57,58,61,63,65,67,68];return l.includes(((n-1)%80)+1)?'吉':'凶';}
+function soProfile(n){const r=((n-1)%40)+1;if(r<=5)return{name:'開拓運',desc:'新しい道を切り開くパイオニア的な運勢。',kw:['挑戦','先駆','開拓']};if(r<=10)return{name:'文武運',desc:'知性と行動力を兼ね備えた実力者タイプ。',kw:['知性','行動','実力']};if(r<=15)return{name:'隆盛運',desc:'人望を集め社会的成功が期待できます。',kw:['人望','統率','成功']};if(r<=20)return{name:'変動運',desc:'変化と波乱の多い運勢。柔軟な対応が鍵。',kw:['変化','柔軟','適応']};if(r<=25)return{name:'安定運',desc:'着実に積み上げる力で堅固な成功を築きます。',kw:['安定','着実','堅固']};if(r<=30)return{name:'霊感運',desc:'直感と感受性に優れた芸術・精神的才能。',kw:['直感','感性','芸術']};if(r<=35)return{name:'独立運',desc:'自立心が強く自分の力で道を切り開く。',kw:['独立','自立','リーダー']};return{name:'円満運',desc:'周囲との調和を大切にする円満な運勢。',kw:['円満','調和','温和']};}
+
+// ────────────────────────────────────────
+// メイン
+// ────────────────────────────────────────
+function doFortune() {
+  const year=parseInt(document.getElementById('year').value);
+  const month=parseInt(document.getElementById('month').value);
+  const day=parseInt(document.getElementById('day').value);
+  const sei=document.getElementById('sei').value.trim();
+  const mei=document.getElementById('mei').value.trim();
+
+  if(!year||!month||!day||year<1900||year>2025)return alert('正しい生年月日を入力してください。');
+  if(!sei||!mei)return alert('姓と名を入力してください。');
+  if(!MEISU[year])return alert(`${year}年は対応範囲外です（1900〜2010年）。`);
+
+  const currentYear=2026;
+  const unmeisu=MEISU[year][month];
+  if(!unmeisu)return alert('月の入力が正しくありません。');
+
+  // 正しい星数計算: 運命数 - 1 + 日
+  let seisu = unmeisu - 1 + day;
+  if(seisu>60)seisu-=60;
+  if(seisu<=0)seisu+=60;
+
+  const starName=getStarFromSeisu(seisu);
+  const pm=getPlusMinus(year);
+  const starKey=`${starName}${pm}`;
+  const star=STARS[starName];
+
+  // 今年の周期
+  const cycleName=getCycle(starKey,currentYear);
+  const cycleInfo=CYCLE_DATA[cycleName];
+  const isDaisak=DAISAK.includes(cycleName);
+  const isShosak=SHOSAK.includes(cycleName);
+
+  // 姓名判断
+  const {ten,jin,chi,gai,so}=calcKakku(sei,mei);
+  const prof=soProfile(so);
+
+  // 相性スコア
+  const cs=Math.min(96,Math.max(42,50+(seisu*3+so*2)%46));
+
+  // 総合スコア
+  const cycleScore=isDaisak?-15:isShosak?-5:10;
+  const jinS=strokeLuck(jin)==='吉'?12:-4;
+  const soS=strokeLuck(so)==='吉'?10:-3;
+  const total=Math.min(97,Math.max(45,65+cycleScore+jinS+soS));
+
+  // ── 表示 ──
+  document.getElementById('r-symbol').textContent=star.symbol;
+  document.getElementById('r-name').textContent=`${starName}${pm==='+'?'プラス':'マイナス'}`;
+  document.getElementById('r-sub').textContent=`星数：${seisu}　運命数：${unmeisu}`;
+  document.getElementById('s-name').textContent=prof.name;
+  document.getElementById('s-sub').textContent=`総格：${so}画 ${strokeLuck(so)}`;
+  document.getElementById('total-score').textContent=total;
+  document.getElementById('total-msg').textContent=`${starName}${pm==='+'?'プラス':'マイナス'}として、「${sei}${mei}」という名前の数理が運命を支えます。今年は【${cycleName}】の年。${prof.name}の力を活かし、${star.kw[0]}と${star.kw[1]}を大切にしてください。`;
+
+  // Tab0
+  document.getElementById('r-nature').textContent=star.nature;
+  document.getElementById('r-kw').innerHTML=star.kw.map(k=>`<span class="kw">${k}</span>`).join('');
+  const cr=document.getElementById('cycle-row');
+  cr.innerHTML=CYCLES.map((n,i)=>{
+    const year_for_cycle=TANE_YEAR[starKey]+i;
+    const isCur=n===cycleName;
+    const isDai=DAISAK.includes(n);
+    return `<div class="cd ${isCur?'on':''} ${isDai&&!isCur?'daisak':''}" title="${n}（${year_for_cycle}年〜）">${n[0]}</div>`;
+  }).join('');
+  document.getElementById('cycle-text').textContent=`現在は【${cycleName}】。${cycleInfo.msg}`;
+
+  // Tab1
+  document.getElementById('stroke-grid').innerHTML=`
+    <div class="sg-item"><span class="sg-label">天格（姓）</span><span class="sg-num">${ten}</span><span class="sg-kaku ${strokeLuck(ten)==='吉'?'good-kaku':'bad-kaku'}">${strokeLuck(ten)}</span></div>
+    <div class="sg-item"><span class="sg-label">人格（核心）</span><span class="sg-num">${jin}</span><span class="sg-kaku ${strokeLuck(jin)==='吉'?'good-kaku':'bad-kaku'}">${strokeLuck(jin)}</span></div>
+    <div class="sg-item"><span class="sg-label">地格（名）</span><span class="sg-num">${chi}</span><span class="sg-kaku ${strokeLuck(chi)==='吉'?'good-kaku':'bad-kaku'}">${strokeLuck(chi)}</span></div>
+    <div class="sg-item"><span class="sg-label">外格（社会）</span><span class="sg-num">${gai}</span><span class="sg-kaku ${strokeLuck(gai)==='吉'?'good-kaku':'bad-kaku'}">${strokeLuck(gai)}</span></div>
+    <div class="sg-item sg-total"><span class="sg-label">総格（総合）</span><span class="sg-num">${so}</span><span class="sg-kaku ${strokeLuck(so)==='吉'?'good-kaku':'bad-kaku'}">${strokeLuck(so)}</span></div>
+  `;
+  document.getElementById('s-nature').textContent=prof.desc;
+  document.getElementById('s-kw').innerHTML=prof.kw.map(k=>`<span class="kw">${k}</span>`).join('');
+  document.getElementById('kakku-text').textContent=`天格【${ten}画】は家系・先祖から受け継ぐ運。人格【${jin}画】は性格・才能の核心で最重要の格。地格【${chi}画】は幼少期〜青年期の運勢に影響。外格【${gai}画】は社会的立場や対人関係を示します。`;
+
+  // Tab2
+  const badgeClass=isDaisak?'bad':isShosak?'normal':'good';
+  document.getElementById('cycle-badge-wrap').innerHTML=`<span class="cycle-badge ${badgeClass}">${cycleName}${isDaisak?' ⚠大殺界':isShosak?' △小殺界':' ◎好運期'}</span>`;
+  document.getElementById('yearly-text').textContent=`${currentYear}年の${starName}${pm==='+'?'プラス':'マイナス'}は「${cycleName}」の年。${cycleInfo.msg} 名前の数理（総格${so}画）が示す${prof.name}の力と合わせると、${star.kw[0]}と${prof.kw[0]}を活かした行動が今年の鍵です。`;
+  setTimeout(()=>{document.getElementById('compat-fill').style.width=cs+'%';},300);
+  document.getElementById('compat-label').textContent=`命数×総格 相性スコア：${cs}点`;
+  document.getElementById('compat-text').textContent=cs>=80?`命数【${seisu}】と総格【${so}画】の相性は非常に高く、星の運気と名の数理が共鳴しています。`:cs>=65?`命数と総格の相性は良好。星の力と名前の数理が互いを補い合っています。`:`命数と総格は独立した個性を持ちます。それぞれの強みを意識的に使い分けることで力になります。`;
+  document.getElementById('monthly-msg').textContent=MONTHLY[(month-1)%12];
+
+  // Tab3
+  const l=star.lucky;
+  document.getElementById('lucky-grid').innerHTML=`
+    <div class="li"><span class="ll">ラッキーカラー</span><span class="lv">${l.color}</span></div>
+    <div class="li"><span class="ll">ラッキーナンバー</span><span class="lv">${l.num}</span></div>
+    <div class="li"><span class="ll">ラッキー方位</span><span class="lv">${l.dir}</span></div>
+    <div class="li"><span class="ll">ラッキーアイテム</span><span class="lv">${l.item}</span></div>
+  `;
+  const nameLucky=((so+seisu)%9)+1;
+  const dirs=['北','北東','東','南東','南','南西','西','北西','中央'];
+  document.getElementById('name-lucky-text').textContent=`総格${so}画と星数${seisu}から導くラッキーナンバーは【${nameLucky}】。ラッキー方位は【${dirs[so%9]}】。この数字を意識した日常の選択が開運の鍵です。`;
+
+  const r=document.getElementById('result');
+  r.classList.remove('show');r.style.display='block';void r.offsetHeight;r.classList.add('show');
+  switchTab(0);
+  r.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Enter')doFortune();});
+</script>
+</body>
+</html>
